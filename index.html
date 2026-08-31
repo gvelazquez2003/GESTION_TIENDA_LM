@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Gestion de Tienda LM</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <script>
+      window.APPS_SCRIPT_URL = '';
+    </script>
+  </head>
+  <body>
+    <div class="brand-corner" aria-hidden="true">
+      <img src="logopandetata.png" alt="" class="brand-corner__logo" />
+    </div>
+
+    <header class="topbar">
+      <h1>Gestion de Tienda LM</h1>
+      <h2 id="module-title" class="module-title">Las Mercedes - Modulo: Inventario Inicial</h2>
+    </header>
+
+    <main class="main">
+      <div id="env-warning" class="alert alert--warn hidden">
+        Configura la URL del Apps Script en config.js para habilitar el guardado en Google Sheets.
+      </div>
+
+      <section class="card">
+        <div class="module-buttons">
+          <button class="module-btn active" id="btn-inicial" type="button">Inventario Inicial</button>
+          <button class="module-btn" id="btn-recibido" type="button">Recibido</button>
+          <button class="module-btn" id="btn-salidas" type="button">Salidas</button>
+          <button class="module-btn" id="btn-cierre" type="button">Inventario Cierre</button>
+        </div>
+        <div class="agotado-btn-wrap">
+          <button class="module-btn module-btn--agotado" id="btn-agotado" type="button">Agotado</button>
+        </div>
+
+        <form id="inventory-form" class="store-form" novalidate>
+          <div id="form-inventario" class="form-grid">
+            <label>
+              <span>Fecha y hora de registro</span>
+              <input type="text" id="fecha-display" readonly />
+            </label>
+
+            <label>
+              <span>Sede</span>
+              <select id="sede" name="sede" required>
+                <option value="" disabled selected>Cargando sedes...</option>
+              </select>
+            </label>
+
+            <label>
+              <span>Responsable</span>
+              <input type="text" name="responsable" placeholder="Nombre del responsable" required />
+            </label>
+
+            <label>
+              <span>Observaciones (Opcional)</span>
+              <input type="text" name="observaciones" placeholder="Ej: Lote de la mañana" />
+            </label>
+          </div>
+
+          <div id="form-agotado" class="form-grid hidden">
+            <label>
+              <span>Fecha y hora de registro</span>
+              <input type="text" id="agotado-fecha" readonly />
+            </label>
+            <label>
+              <span>Producto</span>
+              <input id="agotado-producto" type="text" list="listaProductos" placeholder="Busca por codigo o nombre" autocomplete="off" />
+              <datalist id="listaProductos"></datalist>
+            </label>
+            <label>
+              <span>Sede</span>
+              <select id="agotado-sede" name="agotado-sede" required>
+                <option value="" disabled selected>Cargando sedes...</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="items-card">
+            <h3>Productos del registro</h3>
+            <div class="line-grid">
+              <label>
+                <span>Producto</span>
+                <input id="line-producto" type="text" list="listaProductos" placeholder="Busca por codigo o nombre" autocomplete="off" />
+                <datalist id="listaProductos"></datalist>
+              </label>
+
+              <label>
+                <span>Cantidad</span>
+                <input id="line-cantidad" type="number" min="1" step="1" placeholder="0" />
+              </label>
+
+              <label id="line-fecha-elaboracion-field">
+                <span>Fecha de Elaboración</span>
+                <input id="line-fecha-elaboracion" type="date" required />
+              </label>
+
+              <button id="add-item" type="button" class="btn">Agregar producto</button>
+            </div>
+
+            <p id="items-empty" class="items-empty">Todavia no agregaste productos al registro.</p>
+
+            <div id="items-wrap" class="items-table-wrap hidden">
+              <table class="items-table">
+                <thead>
+                  <tr>
+                    <th>Codigo</th>
+                    <th>Producto</th>
+                    <th>Cantidad</th>
+                    <th id="items-fecha-elaboracion-header">Fecha de Elaboración</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="items-body"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div id="contenedor-motivo" class="motivo-box hidden">
+            <label>
+              <span>Motivo de salida</span>
+              <select id="motivo" name="motivo">
+                <option value="" disabled selected>Seleccione un motivo...</option>
+              </select>
+            </label>
+            <input type="text" id="motivo-otro" name="motivo-otro" placeholder="Escriba el motivo aquí..." class="hidden motivo-otro" />
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn--primary">Guardar Registro</button>
+          </div>
+        </form>
+      </section>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div id="standby-overlay" class="standby-overlay hidden" aria-live="assertive" aria-busy="true" role="status">
+      <div class="standby-panel">
+        <div class="standby-spinner" aria-hidden="true"></div>
+        <p id="standby-message">Cargando...</p>
+        <small>No cierres esta pagina hasta que termine el envio.</small>
+      </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
