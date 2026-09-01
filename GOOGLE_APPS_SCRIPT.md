@@ -19,5 +19,6 @@ Este proyecto usa un Web App de Google Apps Script para guardar registros de Las
 - `GET ?action=getCatalogs` retorna productos y motivos.
 - `POST` con `{ action: 'guardarRegistro', payload: {...} }` guarda un registro.
 - El campo `RESPONSABLE` se valida contra la lista `CONFIG.responsables`.
+- `UTEN001`, `UTEN002` y `UTEN003` se aceptan como productos especiales solo en `INVENTARIO INICIAL` e `INVENTARIO CIERRE`.
 - `LIMPIAR_COPIA_LM` limpia registros viejos, elimina la columna `SEDE` de las hojas de registro y borra la hoja `SEDES`.
 - En `INVENTARIO INICIAL` e `INVENTARIO CIERRE`, Apps Script mantiene la columna `FECHA DE ELABORACION` despues de `CANTIDAD` y la guarda con formato `DD/MM/AA`.

@@ -80,6 +80,14 @@ Formulario web dedicado a Las Mercedes. Registra INVENTARIO INICIAL, RECIBIDO, S
 - `Angeli marrero`
 - `Geisy Hernández`
 
+## Productos especiales
+
+Estos productos aparecen solo en `Inventario Inicial` e `Inventario Cierre`:
+
+- `UTEN001` - `Cucharilla`
+- `UTEN002` - `Tenedor`
+- `UTEN003` - `Cuchillo`
+
 ## Como desplegar
 
 1. Abrir el Apps Script copiado para Las Mercedes.

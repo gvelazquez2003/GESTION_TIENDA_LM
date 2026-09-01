@@ -28,6 +28,11 @@ const CONFIG = {
     'Angeli marrero',
     'Geisy Hernández',
   ],
+  extraProductsByInitialAndClosing: [
+    { codigo: 'UTEN001', producto: 'Cucharilla' },
+    { codigo: 'UTEN002', producto: 'Tenedor' },
+    { codigo: 'UTEN003', producto: 'Cuchillo' },
+  ],
   deprecatedHeaders: ['SEDE'],
 };
 
@@ -122,7 +127,7 @@ function guardarRegistro_(payload) {
   const observaciones = String(data.observaciones || '').trim();
   const motivo = sheetName === CONFIG.sheetNames.salidas ? resolveMotivoSalida_(data.motivo_salida) : '';
   const rows = items.map((item, index) => {
-    const catalogProduct = findProductByCode_(item.codigo);
+    const catalogProduct = findProductByCode_(item.codigo, sheetName);
     if (!catalogProduct) {
       throw new Error('El codigo del item ' + (index + 1) + ' no existe en la hoja PRODUCTOS.');
     }
@@ -219,9 +224,16 @@ function readMotivosSalida_() {
     .filter(Boolean);
 }
 
-function findProductByCode_(rawCode) {
+function findProductByCode_(rawCode, sheetName) {
   const normalizedCode = normalizeText_(rawCode);
-  return readProducts_().find((item) => normalizeText_(item.codigo) === normalizedCode) || null;
+  const catalogProduct = readProducts_().find((item) => normalizeText_(item.codigo) === normalizedCode);
+  if (catalogProduct) return catalogProduct;
+
+  if (requiresFechaElaboracion_(sheetName)) {
+    return CONFIG.extraProductsByInitialAndClosing.find((item) => normalizeText_(item.codigo) === normalizedCode) || null;
+  }
+
+  return null;
 }
 
 function normalizeItems_(data) {

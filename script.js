@@ -3,6 +3,11 @@
 const CURRENT_APPS_SCRIPT_URL = '';
 const APPS_SCRIPT_URL = String(window.APPS_SCRIPT_URL || CURRENT_APPS_SCRIPT_URL || '').trim();
 const APPS_SCRIPT_PROXY_URL = '/api/apps-script';
+const INITIAL_AND_CLOSING_EXTRA_PRODUCTS = [
+  { codigo: 'UTEN001', producto: 'Cucharilla' },
+  { codigo: 'UTEN002', producto: 'Tenedor' },
+  { codigo: 'UTEN003', producto: 'Cuchillo' },
+];
 
 const state = {
   products: [],
@@ -79,6 +84,7 @@ function setupModuleButtons() {
       updateModuleTitle();
       clearItems();
       updateFechaElaboracionVisibility();
+      renderProductOptions();
 
       // Mostrar/ocultar formularios según módulo
       if (elements.formInventario) elements.formInventario.classList.toggle('hidden', moduleName === 'Agotado');
@@ -286,6 +292,7 @@ function setupForm() {
       state.activeModule = 'Inventario Inicial';
       setActiveButton('btn-inicial');
       updateModuleTitle();
+      renderProductOptions();
       if (elements.motivoSelect) elements.motivoSelect.value = '';
       if (elements.motivoOtroInput) {
         elements.motivoOtroInput.value = '';
@@ -357,7 +364,7 @@ function resolveProduct(rawValue) {
   const value = normalizeText(rawValue);
   if (!value) return null;
 
-  const fromCatalog = state.products.find((item) => {
+  const fromCatalog = getAvailableProducts().find((item) => {
     const byCode = normalizeText(item.codigo);
     const byLabel = normalizeText(`${item.codigo} ${item.producto}`);
     const byName = normalizeText(item.producto);
@@ -435,10 +442,19 @@ function isDeprecatedSedesCatalogError(error) {
 
 function renderProductOptions() {
   if (!elements.productosList) return;
-  elements.productosList.innerHTML = state.products.map((item) => {
+  elements.productosList.innerHTML = getAvailableProducts().map((item) => {
     const label = `${item.codigo} ${item.producto}`.trim();
     return `<option value="${escapeHtml(label)}"></option>`;
   }).join('');
+}
+
+function getAvailableProducts() {
+  if (!isInitialOrClosingModule(state.activeModule)) return state.products;
+  return [...state.products, ...INITIAL_AND_CLOSING_EXTRA_PRODUCTS];
+}
+
+function isInitialOrClosingModule(moduleName) {
+  return moduleName === 'Inventario Inicial' || moduleName === 'Inventario Cierre';
 }
 
 function renderMotivosOptions() {
