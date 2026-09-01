@@ -424,8 +424,13 @@ async function fetchCatalogs() {
     renderProductOptions();
     renderMotivosOptions();
   } catch (error) {
+    if (isDeprecatedSedesCatalogError(error)) return;
     showToast(error.message || 'No se pudieron sincronizar los catalogos.', 'error');
   }
+}
+
+function isDeprecatedSedesCatalogError(error) {
+  return normalizeText(error?.message).includes('no se encontro la hoja sedes');
 }
 
 function renderProductOptions() {
