@@ -67,6 +67,19 @@ Formulario web dedicado a Las Mercedes. Registra INVENTARIO INICIAL, RECIBIDO, S
 - `CODIGO`
 - `PRODUCTO`
 
+## Responsables permitidos
+
+- `Keider Mora`
+- `Leandro Seprum`
+- `Angel Velasquez`
+- `Karol Mijares`
+- `Rosmery Fernandez`
+- `Rosangeles Sanchez`
+- `María Rodríguez`
+- `Carmalis Brito`
+- `Angeli marrero`
+- `Geisy Hernández`
+
 ## Como desplegar
 
 1. Abrir el Apps Script copiado para Las Mercedes.
@@ -88,5 +101,6 @@ Formulario web dedicado a Las Mercedes. Registra INVENTARIO INICIAL, RECIBIDO, S
 ## Notas
 
 - El formulario toma productos desde `PRODUCTOS` y motivos desde `MOTIVOS SALIDA`.
+- El responsable se selecciona desde una lista cerrada en el formulario y se valida en Apps Script.
 - El modulo `Salidas` exige motivo de salida.
 - El frontend usa catalogos remotos; no hay listas embebidas en HTML.

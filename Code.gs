@@ -16,6 +16,18 @@ const CONFIG = {
     salidas: ['FECHA', 'CODIGO', 'PRODUCTO', 'CANTIDAD', 'RESPONSABLE', 'OBSERVACIONES', 'MOTIVO SALIDA'],
     agotado: ['FECHA', 'CODIGO', 'PRODUCTO'],
   },
+  responsables: [
+    'Keider Mora',
+    'Leandro Seprum',
+    'Angel Velasquez',
+    'Karol Mijares',
+    'Rosmery Fernandez',
+    'Rosangeles Sanchez',
+    'María Rodríguez',
+    'Carmalis Brito',
+    'Angeli marrero',
+    'Geisy Hernández',
+  ],
   deprecatedHeaders: ['SEDE'],
 };
 
@@ -106,7 +118,7 @@ function guardarRegistro_(payload) {
     throw new Error('Debes incluir al menos un producto con cantidad.');
   }
   const fecha = buildTimestamp_();
-  const responsable = String(data.responsable || '').trim();
+  const responsable = resolveResponsable_(data.responsable);
   const observaciones = String(data.observaciones || '').trim();
   const motivo = sheetName === CONFIG.sheetNames.salidas ? resolveMotivoSalida_(data.motivo_salida) : '';
   const rows = items.map((item, index) => {
@@ -259,6 +271,20 @@ function resolveMotivoSalida_(rawValue) {
   }
 
   return motivo;
+}
+
+function resolveResponsable_(rawValue) {
+  const responsable = String(rawValue || '').trim();
+  if (!responsable) {
+    throw new Error('Debes seleccionar un responsable.');
+  }
+
+  const validResponsables = CONFIG.responsables.map(normalizeText_);
+  if (!validResponsables.includes(normalizeText_(responsable))) {
+    throw new Error('El responsable no esta autorizado para Gestion de Tienda LM.');
+  }
+
+  return responsable;
 }
 
 function requiresFechaElaboracion_(sheetName) {
