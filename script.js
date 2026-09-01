@@ -7,7 +7,6 @@ const APPS_SCRIPT_PROXY_URL = '/api/apps-script';
 const state = {
   products: [],
   motivosSalida: [],
-  sedes: [],
   activeModule: 'Inventario Inicial',
   items: [],
 };
@@ -17,7 +16,6 @@ const elements = {
   form: document.getElementById('inventory-form'),
   submitButton: null,
   fechaDisplay: document.getElementById('fecha-display'),
-  sedeSelect: document.getElementById('sede'),
   productosList: document.getElementById('listaProductos'),
   lineProducto: document.getElementById('line-producto'),
   lineCantidad: document.getElementById('line-cantidad'),
@@ -46,7 +44,6 @@ const elements = {
   formAgotado: document.getElementById('form-agotado'),
   agotadoFecha: document.getElementById('agotado-fecha'),
   agotadoProducto: document.getElementById('agotado-producto'),
-  agotadoSede: document.getElementById('agotado-sede'),
 };
 
 elements.submitButton = elements.form ? elements.form.querySelector('button[type="submit"]') : null;
@@ -211,13 +208,8 @@ function setupForm() {
     if (state.activeModule === 'Agotado') {
       const productoRaw = elements.agotadoProducto?.value || '';
       const parsedProduct = resolveProduct(productoRaw);
-      const sede = String(elements.agotadoSede?.value || '').trim();
       if (!parsedProduct) {
         showToast('Selecciona un producto válido del catálogo.', 'error');
-        return;
-      }
-      if (!sede) {
-        showToast('Selecciona una sede.', 'error');
         return;
       }
       const payload = {
@@ -225,7 +217,6 @@ function setupForm() {
         tipo_movimiento: state.activeModule,
         codigo: parsedProduct.codigo,
         producto: parsedProduct.producto,
-        sede,
         fecha: elements.agotadoFecha?.value || '',
       };
 
@@ -265,7 +256,6 @@ function setupForm() {
     const payload = {
       hoja_destino: mapSheetName(state.activeModule),
       tipo_movimiento: state.activeModule,
-      sede: String(elements.sedeSelect?.value || formData.get('sede') || '').trim(),
       responsable: String(formData.get('responsable') || '').trim(),
       observaciones: String(formData.get('observaciones') || '').trim(),
       motivo_salida: motivoSalida,
@@ -276,7 +266,7 @@ function setupForm() {
       })),
     };
 
-    if (!payload.sede || !payload.responsable) {
+    if (!payload.responsable) {
       showToast('Completa los campos obligatorios.', 'error');
       return;
     }
@@ -430,11 +420,9 @@ async function fetchCatalogs() {
 
     state.products = Array.isArray(data.data?.products) ? data.data.products : [];
     state.motivosSalida = Array.isArray(data.data?.motivosSalida) ? data.data.motivosSalida : [];
-    state.sedes = Array.isArray(data.data?.sedes) ? data.data.sedes : [];
 
     renderProductOptions();
     renderMotivosOptions();
-    renderSedesOptions();
   } catch (error) {
     showToast(error.message || 'No se pudieron sincronizar los catalogos.', 'error');
   }
@@ -457,18 +445,6 @@ function renderMotivosOptions() {
   });
   options.push('<option value="Otro">Otro...</option>');
   elements.motivoSelect.innerHTML = options.join('');
-}
-
-function renderSedesOptions() {
-  const options = ['<option value="" disabled selected>Seleccione una sede...</option>'];
-  state.sedes.forEach((sede) => {
-    options.push(`<option value="${escapeHtml(sede)}">${escapeHtml(sede)}</option>`);
-  });
-
-  [elements.sedeSelect, elements.agotadoSede].forEach((select) => {
-    if (!select) return;
-    select.innerHTML = options.join('');
-  });
 }
 
 async function postData(payload) {

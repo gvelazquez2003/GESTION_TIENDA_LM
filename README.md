@@ -1,6 +1,6 @@
 # Gestion de Tienda LM
 
-Formulario web para la sede Las Mercedes. Registra INVENTARIO INICIAL, RECIBIDO, SALIDAS, INVENTARIO CIERRE y AGOTADO conectado a Google Sheets mediante Google Apps Script.
+Formulario web dedicado a Las Mercedes. Registra INVENTARIO INICIAL, RECIBIDO, SALIDAS, INVENTARIO CIERRE y AGOTADO conectado a Google Sheets mediante Google Apps Script.
 
 ## Estructura
 
@@ -24,7 +24,6 @@ Formulario web para la sede Las Mercedes. Registra INVENTARIO INICIAL, RECIBIDO,
 - `INVENTARIO CIERRE`
 - `PRODUCTOS`
 - `MOTIVOS SALIDA`
-- `SEDES`
 
 ## Columnas esperadas
 
@@ -33,7 +32,6 @@ Formulario web para la sede Las Mercedes. Registra INVENTARIO INICIAL, RECIBIDO,
 - `CODIGO`
 - `PRODUCTO`
 - `CANTIDAD`
-- `SEDE`
 - `RESPONSABLE`
 - `OBSERVACIONES`
 
@@ -43,7 +41,6 @@ Formulario web para la sede Las Mercedes. Registra INVENTARIO INICIAL, RECIBIDO,
 - `PRODUCTO`
 - `CANTIDAD`
 - `FECHA DE ELABORACION`
-- `SEDE`
 - `RESPONSABLE`
 - `OBSERVACIONES`
 
@@ -52,7 +49,6 @@ Formulario web para la sede Las Mercedes. Registra INVENTARIO INICIAL, RECIBIDO,
 - `CODIGO`
 - `PRODUCTO`
 - `CANTIDAD`
-- `SEDE`
 - `RESPONSABLE`
 - `OBSERVACIONES`
 - `MOTIVO SALIDA`
@@ -66,29 +62,31 @@ Formulario web para la sede Las Mercedes. Registra INVENTARIO INICIAL, RECIBIDO,
 ### Hoja `MOTIVOS SALIDA`
 - `MOTIVOS SALIDA`
 
-### Hoja `SEDES`
-- `SEDES`
-
 ### Hoja `AGOTADO`
 - `FECHA`
 - `CODIGO`
 - `PRODUCTO`
-- `SEDE`
 
 ## Como desplegar
 
 1. Abrir el Apps Script copiado para Las Mercedes.
 2. Copiar el contenido actualizado de `Code.gs` en el archivo `Code.gs` del proyecto.
-3. Desplegar como Web App:
+3. Ejecutar una vez la funcion `LIMPIAR_COPIA_LM` desde Apps Script para limpiar registros viejos y quitar `SEDE`.
+4. Desplegar como Web App:
    - Execute as: `Me`
    - Who has access: `Anyone` o `Anyone with the link`
-4. Confirmar que la URL `/exec` sea:
+5. Confirmar que la URL `/exec` sea:
    `https://script.google.com/macros/s/AKfycbzr-1n7pHKw2ipc0EX6x4cnBPRpORsaL7pADIFQBX0BTY2g1zCfebKdgQFwymiAm7yF/exec`
-5. Importar este repositorio en Vercel y publicar.
-6. El frontend ya llama al proxy `/api/apps-script`, no al Web App directamente.
+6. Importar este repositorio en Vercel y publicar.
+7. El frontend ya llama al proxy `/api/apps-script`, no al Web App directamente.
+
+## Limpieza del Sheet copiado
+
+- Ejecutar `LIMPIAR_COPIA_LM` desde Apps Script para borrar los datos viejos de `INVENTARIO INICIAL`, `RECIBIDO`, `SALIDAS`, `INVENTARIO CIERRE` y `AGOTADO`, dejando solo la fila de encabezados.
+- Esa funcion tambien elimina la columna `SEDE` de las hojas de registro y borra la hoja `SEDES`.
 
 ## Notas
 
-- El formulario toma productos desde `PRODUCTOS`, motivos desde `MOTIVOS SALIDA` y sedes desde `SEDES`.
+- El formulario toma productos desde `PRODUCTOS` y motivos desde `MOTIVOS SALIDA`.
 - El modulo `Salidas` exige motivo de salida.
 - El frontend usa catalogos remotos; no hay listas embebidas en HTML.

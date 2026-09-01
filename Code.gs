@@ -9,14 +9,14 @@ const CONFIG = {
     agotado: 'AGOTADO',
     productos: 'PRODUCTOS',
     motivosSalida: 'MOTIVOS SALIDA',
-    sedes: 'SEDES',
   },
   headers: {
-    base: ['FECHA', 'CODIGO', 'PRODUCTO', 'CANTIDAD', 'SEDE', 'RESPONSABLE', 'OBSERVACIONES'],
-    conFechaElaboracion: ['FECHA', 'CODIGO', 'PRODUCTO', 'CANTIDAD', 'FECHA DE ELABORACION', 'SEDE', 'RESPONSABLE', 'OBSERVACIONES'],
-    salidas: ['FECHA', 'CODIGO', 'PRODUCTO', 'CANTIDAD', 'SEDE', 'RESPONSABLE', 'OBSERVACIONES', 'MOTIVO SALIDA'],
-    agotado: ['FECHA', 'CODIGO', 'PRODUCTO', 'SEDE'],
+    base: ['FECHA', 'CODIGO', 'PRODUCTO', 'CANTIDAD', 'RESPONSABLE', 'OBSERVACIONES'],
+    conFechaElaboracion: ['FECHA', 'CODIGO', 'PRODUCTO', 'CANTIDAD', 'FECHA DE ELABORACION', 'RESPONSABLE', 'OBSERVACIONES'],
+    salidas: ['FECHA', 'CODIGO', 'PRODUCTO', 'CANTIDAD', 'RESPONSABLE', 'OBSERVACIONES', 'MOTIVO SALIDA'],
+    agotado: ['FECHA', 'CODIGO', 'PRODUCTO'],
   },
+  deprecatedHeaders: ['SEDE'],
 };
 
 function doGet(e) {
@@ -78,22 +78,17 @@ function guardarRegistro_(payload) {
 
   const sheetName = resolveSheetName_(data.hoja_destino);
   const sheet = getOrCreateSheet_(sheetName);
-  let headers = CONFIG.headers.base;
-  if (requiresFechaElaboracion_(sheetName)) headers = CONFIG.headers.conFechaElaboracion;
-  if (sheetName === CONFIG.sheetNames.salidas) headers = CONFIG.headers.salidas;
-  if (sheetName === CONFIG.sheetNames.agotado) headers = CONFIG.headers.agotado;
-  ensureHeaders_(sheet, headers);
+  ensureHeaders_(sheet, getHeadersForSheet_(sheetName));
 
   // Lógica especial para AGOTADO
   if (sheetName === CONFIG.sheetNames.agotado) {
     // Validar campos requeridos
-    if (!data.codigo || !data.producto || !data.sede) {
-      throw new Error('Debes indicar el codigo, nombre del producto y sede.');
+    if (!data.codigo || !data.producto) {
+      throw new Error('Debes indicar el codigo y nombre del producto.');
     }
     // Usar fecha proporcionada o actual
     const fecha = data.fecha ? String(data.fecha).trim() : buildTimestamp_();
-    const sede = resolveSede_(data.sede);
-    const row = [fecha, String(data.codigo).trim(), String(data.producto).trim(), sede];
+    const row = [fecha, String(data.codigo).trim(), String(data.producto).trim()];
     const startRow = sheet.getLastRow() + 1;
     sheet.getRange(startRow, 1, 1, row.length).setValues([row]);
     return {
@@ -105,13 +100,12 @@ function guardarRegistro_(payload) {
   }
 
   // Lógica original para los demás módulos
-  validateRequired_(data, ['hoja_destino', 'sede', 'responsable']);
+  validateRequired_(data, ['hoja_destino', 'responsable']);
   const items = normalizeItems_(data);
   if (!items.length) {
     throw new Error('Debes incluir al menos un producto con cantidad.');
   }
   const fecha = buildTimestamp_();
-  const sede = resolveSede_(data.sede);
   const responsable = String(data.responsable || '').trim();
   const observaciones = String(data.observaciones || '').trim();
   const motivo = sheetName === CONFIG.sheetNames.salidas ? resolveMotivoSalida_(data.motivo_salida) : '';
@@ -126,12 +120,12 @@ function guardarRegistro_(payload) {
     }
     if (requiresFechaElaboracion_(sheetName)) {
       const fechaElaboracion = parseFechaElaboracion_(item.fechaElaboracion, index);
-      return [fecha, catalogProduct.codigo, catalogProduct.producto, cantidad, fechaElaboracion, sede, responsable, observaciones];
+      return [fecha, catalogProduct.codigo, catalogProduct.producto, cantidad, fechaElaboracion, responsable, observaciones];
     }
     if (sheetName === CONFIG.sheetNames.salidas) {
-      return [fecha, catalogProduct.codigo, catalogProduct.producto, cantidad, sede, responsable, observaciones, motivo];
+      return [fecha, catalogProduct.codigo, catalogProduct.producto, cantidad, responsable, observaciones, motivo];
     }
-    return [fecha, catalogProduct.codigo, catalogProduct.producto, cantidad, sede, responsable, observaciones];
+    return [fecha, catalogProduct.codigo, catalogProduct.producto, cantidad, responsable, observaciones];
   });
   const startRow = sheet.getLastRow() + 1;
   sheet.getRange(startRow, 1, rows.length, rows[0].length).setValues(rows);
@@ -151,8 +145,36 @@ function getCatalogs_() {
   return {
     products: readProducts_(),
     motivosSalida: readMotivosSalida_(),
-    sedes: readSedes_(),
   };
+}
+
+function LIMPIAR_COPIA_LM() {
+  const ss = getSpreadsheet_();
+  const registerSheets = [
+    CONFIG.sheetNames.inventarioInicial,
+    CONFIG.sheetNames.recibido,
+    CONFIG.sheetNames.salidas,
+    CONFIG.sheetNames.inventarioCierre,
+    CONFIG.sheetNames.agotado,
+  ];
+
+  registerSheets.forEach((sheetName) => {
+    const sheet = getOrCreateSheet_(sheetName);
+    ensureHeaders_(sheet, getHeadersForSheet_(sheetName));
+
+    const lastRow = sheet.getLastRow();
+    const lastColumn = sheet.getLastColumn();
+    if (lastRow > 1 && lastColumn > 0) {
+      sheet.getRange(2, 1, lastRow - 1, lastColumn).clearContent();
+    }
+  });
+
+  const sedesSheet = ss.getSheetByName('SEDES');
+  if (sedesSheet && ss.getSheets().length > 1) {
+    ss.deleteSheet(sedesSheet);
+  }
+
+  return 'Copia LM limpia: registros borrados y estructura sin SEDE.';
 }
 
 function readProducts_() {
@@ -177,18 +199,6 @@ function readMotivosSalida_() {
   const sheet = getSpreadsheet_().getSheetByName(CONFIG.sheetNames.motivosSalida);
   if (!sheet) {
     throw new Error('No se encontro la hoja MOTIVOS SALIDA.');
-  }
-
-  return sheet.getDataRange().getValues()
-    .slice(1)
-    .map((row) => String(row[0] || '').trim())
-    .filter(Boolean);
-}
-
-function readSedes_() {
-  const sheet = getSpreadsheet_().getSheetByName(CONFIG.sheetNames.sedes);
-  if (!sheet) {
-    throw new Error('No se encontro la hoja SEDES.');
   }
 
   return sheet.getDataRange().getValues()
@@ -251,20 +261,6 @@ function resolveMotivoSalida_(rawValue) {
   return motivo;
 }
 
-function resolveSede_(rawValue) {
-  const sede = String(rawValue || '').trim();
-  if (!sede) {
-    throw new Error('Debes seleccionar una sede.');
-  }
-
-  const validSedes = readSedes_().map(normalizeText_);
-  if (!validSedes.includes(normalizeText_(sede))) {
-    throw new Error('La sede no existe en la hoja SEDES.');
-  }
-
-  return sede;
-}
-
 function requiresFechaElaboracion_(sheetName) {
   return sheetName === CONFIG.sheetNames.inventarioInicial || sheetName === CONFIG.sheetNames.inventarioCierre;
 }
@@ -297,7 +293,16 @@ function getOrCreateSheet_(sheetName) {
   return sheet;
 }
 
+function getHeadersForSheet_(sheetName) {
+  if (requiresFechaElaboracion_(sheetName)) return CONFIG.headers.conFechaElaboracion;
+  if (sheetName === CONFIG.sheetNames.salidas) return CONFIG.headers.salidas;
+  if (sheetName === CONFIG.sheetNames.agotado) return CONFIG.headers.agotado;
+  return CONFIG.headers.base;
+}
+
 function ensureHeaders_(sheet, headers) {
+  removeDeprecatedHeaders_(sheet, CONFIG.deprecatedHeaders || []);
+
   const expected = headers.map((value) => String(value || '').trim().toUpperCase());
   const currentLastColumn = Math.max(sheet.getLastColumn(), headers.length);
   let current = sheet.getRange(1, 1, 1, currentLastColumn).getValues()[0].map((value) => String(value || '').trim().toUpperCase());
@@ -318,6 +323,18 @@ function ensureHeaders_(sheet, headers) {
 
   sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
   sheet.setFrozenRows(1);
+}
+
+function removeDeprecatedHeaders_(sheet, deprecatedHeaders) {
+  if (!sheet || !deprecatedHeaders.length || sheet.getLastColumn() < 1) return;
+
+  const deprecated = deprecatedHeaders.map(normalizeText_);
+  const current = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  for (let index = current.length - 1; index >= 0; index--) {
+    if (deprecated.includes(normalizeText_(current[index]))) {
+      sheet.deleteColumn(index + 1);
+    }
+  }
 }
 
 function validateRequired_(payload, fields) {
