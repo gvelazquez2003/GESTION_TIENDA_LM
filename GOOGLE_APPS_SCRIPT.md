@@ -4,7 +4,7 @@ Este proyecto usa un Web App de Google Apps Script para guardar registros de Las
 
 ## Requisitos
 
-- Spreadsheet ID: reemplazar `REEMPLAZAR_CON_SPREADSHEET_ID_LM` en `Code.gs` por el ID del Sheet nuevo de Las Mercedes.
+- Spreadsheet ID: `1fRRKHVA1cNp0zY26qu1RPqfTQ37DYlQlGgynPUgDtkY`
 - Hojas:
   - `INVENTARIO INICIAL`
   - `RECIBIDO`

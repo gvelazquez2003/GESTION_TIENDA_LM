@@ -1,5 +1,5 @@
 const CONFIG = {
-  spreadsheetId: 'REEMPLAZAR_CON_SPREADSHEET_ID_LM',
+  spreadsheetId: '1fRRKHVA1cNp0zY26qu1RPqfTQ37DYlQlGgynPUgDtkY',
   timeZone: 'America/Caracas',
   sheetNames: {
     inventarioInicial: 'INVENTARIO INICIAL',

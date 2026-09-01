@@ -1,3 +1,2 @@
 // URL /exec del Web App de Google Apps Script para Las Mercedes.
-// Dejar vacio evita que esta replica escriba en el Apps Script de otra tienda.
-window.APPS_SCRIPT_URL = '';
+window.APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzr-1n7pHKw2ipc0EX6x4cnBPRpORsaL7pADIFQBX0BTY2g1zCfebKdgQFwymiAm7yF/exec';

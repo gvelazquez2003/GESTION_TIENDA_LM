@@ -13,8 +13,8 @@ Formulario web para la sede Las Mercedes. Registra INVENTARIO INICIAL, RECIBIDO,
 
 ## Spreadsheet objetivo
 
-- URL: pendiente de crear para Las Mercedes
-- ID: reemplazar `REEMPLAZAR_CON_SPREADSHEET_ID_LM` en `Code.gs` cuando exista el Sheet nuevo
+- URL: `https://docs.google.com/spreadsheets/d/1fRRKHVA1cNp0zY26qu1RPqfTQ37DYlQlGgynPUgDtkY/edit`
+- ID: `1fRRKHVA1cNp0zY26qu1RPqfTQ37DYlQlGgynPUgDtkY`
 
 ## Hojas esperadas
 
@@ -77,17 +77,15 @@ Formulario web para la sede Las Mercedes. Registra INVENTARIO INICIAL, RECIBIDO,
 
 ## Como desplegar
 
-1. Crear/copiar el Google Sheet independiente para Las Mercedes.
-2. Reemplazar `REEMPLAZAR_CON_SPREADSHEET_ID_LM` en `Code.gs` por el ID del Sheet nuevo.
-3. Crear un proyecto en Google Apps Script.
-4. Copiar el contenido de `Code.gs` en el archivo `Code.gs` del proyecto.
-5. Desplegar como Web App:
+1. Abrir el Apps Script copiado para Las Mercedes.
+2. Copiar el contenido actualizado de `Code.gs` en el archivo `Code.gs` del proyecto.
+3. Desplegar como Web App:
    - Execute as: `Me`
    - Who has access: `Anyone` o `Anyone with the link`
-6. Copiar la URL `/exec` del deploy.
-7. Pegar esa URL en `config.js` en la constante `window.APPS_SCRIPT_URL`.
-8. Importar este repositorio en Vercel y publicar.
-9. El frontend ya llama al proxy `/api/apps-script`, no al Web App directamente.
+4. Confirmar que la URL `/exec` sea:
+   `https://script.google.com/macros/s/AKfycbzr-1n7pHKw2ipc0EX6x4cnBPRpORsaL7pADIFQBX0BTY2g1zCfebKdgQFwymiAm7yF/exec`
+5. Importar este repositorio en Vercel y publicar.
+6. El frontend ya llama al proxy `/api/apps-script`, no al Web App directamente.
 
 ## Notas
 
