@@ -7,6 +7,7 @@ const INITIAL_AND_CLOSING_EXTRA_PRODUCTS = [
   { codigo: 'UTEN001', producto: 'Cucharilla' },
   { codigo: 'UTEN002', producto: 'Tenedor' },
   { codigo: 'UTEN003', producto: 'Cuchillo' },
+  { codigo: 'PTEM0195', producto: 'CAFE DE TATA MOLIDO 250 GR' },
 ];
 
 const state = {

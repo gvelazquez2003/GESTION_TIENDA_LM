@@ -87,6 +87,7 @@ Estos productos aparecen solo en `Inventario Inicial` e `Inventario Cierre`:
 - `UTEN001` - `Cucharilla`
 - `UTEN002` - `Tenedor`
 - `UTEN003` - `Cuchillo`
+- `PTEM0195` - `CAFE DE TATA MOLIDO 250 GR`
 
 ## Como desplegar
 

@@ -32,6 +32,7 @@ const CONFIG = {
     { codigo: 'UTEN001', producto: 'Cucharilla' },
     { codigo: 'UTEN002', producto: 'Tenedor' },
     { codigo: 'UTEN003', producto: 'Cuchillo' },
+    { codigo: 'PTEM0195', producto: 'CAFE DE TATA MOLIDO 250 GR' },
   ],
   deprecatedHeaders: ['SEDE'],
 };
