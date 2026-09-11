@@ -28,6 +28,9 @@ const CONFIG = {
     'Angeli marrero',
     'Geisy Hernández',
   ],
+  extraProductsForAllModules: [
+    { codigo: 'PTPV0164', producto: 'PIZZA JAMON Y CHAMPINONES CONGELADA' },
+  ],
   extraProductsByInitialAndClosing: [
     { codigo: 'UTEN001', producto: 'Cucharilla' },
     { codigo: 'UTEN002', producto: 'Tenedor' },
@@ -161,7 +164,7 @@ function guardarRegistro_(payload) {
 
 function getCatalogs_() {
   return {
-    products: readProducts_(),
+    products: getCatalogProducts_(),
     motivosSalida: readMotivosSalida_(),
   };
 }
@@ -213,6 +216,10 @@ function readProducts_() {
     }));
 }
 
+function getCatalogProducts_() {
+  return mergeProductsByCode_(readProducts_(), CONFIG.extraProductsForAllModules || []);
+}
+
 function readMotivosSalida_() {
   const sheet = getSpreadsheet_().getSheetByName(CONFIG.sheetNames.motivosSalida);
   if (!sheet) {
@@ -227,7 +234,7 @@ function readMotivosSalida_() {
 
 function findProductByCode_(rawCode, sheetName) {
   const normalizedCode = normalizeText_(rawCode);
-  const catalogProduct = readProducts_().find((item) => normalizeText_(item.codigo) === normalizedCode);
+  const catalogProduct = getCatalogProducts_().find((item) => normalizeText_(item.codigo) === normalizedCode);
   if (catalogProduct) return catalogProduct;
 
   if (requiresFechaElaboracion_(sheetName)) {
@@ -235,6 +242,20 @@ function findProductByCode_(rawCode, sheetName) {
   }
 
   return null;
+}
+
+function mergeProductsByCode_() {
+  const seen = {};
+  const products = [];
+  Array.prototype.slice.call(arguments).forEach((group) => {
+    (group || []).forEach((product) => {
+      const code = normalizeText_(product && product.codigo);
+      if (!code || seen[code]) return;
+      seen[code] = true;
+      products.push(product);
+    });
+  });
+  return products;
 }
 
 function normalizeItems_(data) {

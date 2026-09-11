@@ -3,6 +3,9 @@
 const CURRENT_APPS_SCRIPT_URL = '';
 const APPS_SCRIPT_URL = String(window.APPS_SCRIPT_URL || CURRENT_APPS_SCRIPT_URL || '').trim();
 const APPS_SCRIPT_PROXY_URL = '/api/apps-script';
+const GLOBAL_EXTRA_PRODUCTS = [
+  { codigo: 'PTPV0164', producto: 'PIZZA JAMON Y CHAMPINONES CONGELADA' },
+];
 const INITIAL_AND_CLOSING_EXTRA_PRODUCTS = [
   { codigo: 'UTEN001', producto: 'Cucharilla' },
   { codigo: 'UTEN002', producto: 'Tenedor' },
@@ -450,8 +453,23 @@ function renderProductOptions() {
 }
 
 function getAvailableProducts() {
-  if (!isInitialOrClosingModule(state.activeModule)) return state.products;
-  return [...state.products, ...INITIAL_AND_CLOSING_EXTRA_PRODUCTS];
+  const products = mergeProductsByCode(state.products, GLOBAL_EXTRA_PRODUCTS);
+  if (!isInitialOrClosingModule(state.activeModule)) return products;
+  return mergeProductsByCode(products, INITIAL_AND_CLOSING_EXTRA_PRODUCTS);
+}
+
+function mergeProductsByCode(...productGroups) {
+  const seen = new Set();
+  const products = [];
+
+  productGroups.flat().forEach((product) => {
+    const code = normalizeText(product?.codigo);
+    if (!code || seen.has(code)) return;
+    seen.add(code);
+    products.push(product);
+  });
+
+  return products;
 }
 
 function isInitialOrClosingModule(moduleName) {

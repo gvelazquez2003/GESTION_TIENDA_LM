@@ -80,7 +80,13 @@ Formulario web dedicado a Las Mercedes. Registra INVENTARIO INICIAL, RECIBIDO, S
 - `Angeli marrero`
 - `Geisy Hernández`
 
-## Productos especiales
+## Productos globales
+
+Estos productos aparecen en todos los modulos:
+
+- `PTPV0164` - `PIZZA JAMON Y CHAMPINONES CONGELADA`
+
+## Productos especiales de inventario
 
 Estos productos aparecen solo en `Inventario Inicial` e `Inventario Cierre`:
 
