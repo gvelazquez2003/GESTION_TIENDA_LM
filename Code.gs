@@ -17,7 +17,7 @@ const CONFIG = {
     agotado: ['FECHA', 'CODIGO', 'PRODUCTO'],
   },
   responsables: [
-    'Keider Mora',
+    'Emili Viloria',
     'Leandro Seprum',
     'Angel Velasquez',
     'Karol Mijares',

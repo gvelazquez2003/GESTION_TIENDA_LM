@@ -69,7 +69,7 @@ Formulario web dedicado a Las Mercedes. Registra INVENTARIO INICIAL, RECIBIDO, S
 
 ## Responsables permitidos
 
-- `Keider Mora`
+- `Emili Viloria`
 - `Leandro Seprum`
 - `Angel Velasquez`
 - `Karol Mijares`
